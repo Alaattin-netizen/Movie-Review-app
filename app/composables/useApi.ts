@@ -1,4 +1,4 @@
-import type { Media, PageResult, TMDBAccount } from '~~/shared/types.ts'
+import type { GenreListResponse, Media, PageResult, TMDBAccount } from '~~/shared/types.ts'
 import { $fetch } from 'ofetch'
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
@@ -41,15 +41,22 @@ export function useApi() {
 
   const logout = () => apiFetch('/api/auth/logout', { method: 'POST' })
   const getCurrentUser = () => apiFetch<TMDBAccount>('/api/auth/me')
-
+  const searchMovies = (q: string, page = 1) => apiFetch<PageResult<Media>>('/api/search', { params: { q, page } })
   const getPopularMovies = (page = 1) => apiFetch<PageResult<Media>>('/api/movies', { params: { page } })
   const getMovieDetails = (id: string) => apiFetch<Media>(`/api/movie/${id}`)
-
+  const getTrendingMovies = (timeWindow: 'day' | 'week' = 'day', page = 1) =>
+    apiFetch<PageResult<Media>>('/api/trending', {
+      params: { time_window: timeWindow, page },
+    })
+  const getMovieGenres = () => apiFetch<GenreListResponse>('/api/genres')
   return {
     login,
     logout,
     getCurrentUser,
     getPopularMovies,
     getMovieDetails,
+    searchMovies,
+    getTrendingMovies,
+    getMovieGenres,
   }
 }

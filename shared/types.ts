@@ -144,3 +144,6 @@ export interface TMDBAccount {
   include_adult: boolean
   username: string
 }
+export interface GenreListResponse {
+  genres: Genre[]
+}
