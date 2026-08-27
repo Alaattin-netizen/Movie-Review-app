@@ -1,80 +1,81 @@
 <script setup lang="ts">
-import type { AuthFormField, FormSubmitEvent } from '@nuxt/ui'
-import * as z from 'zod'
-
-const toast = useToast()
-const api = useApi()
-
-const fields: AuthFormField[] = [
-  { name: 'username', type: 'text', label: 'Username', placeholder: 'Enter your TMDB username', required: true },
-  { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter your password', required: true },
-  { name: 'remember', label: 'Remember me', type: 'checkbox' },
-]
-
-const providers = [
-  {
-    label: 'Google',
-    icon: 'i-simple-icons-google',
-    onClick: () => {
-      toast.add({ title: 'Google', description: 'Login with Google is not available yet.' })
-    },
-  },
-  {
-    label: 'GitHub',
-    icon: 'i-simple-icons-github',
-    onClick: () => {
-      toast.add({ title: 'GitHub', description: 'Login with GitHub is not available yet.' })
-    },
-  },
-]
-
-const schema = z.object({
-  username: z.string('Username is required').min(1, 'Username is required'),
-  password: z.string('Password is required').min(8, 'Password must be at least 8 characters'),
-})
-
-type Schema = z.output<typeof schema>
-
-async function onSubmit(payload: FormSubmitEvent<Schema>) {
-  try {
-    await api.login(payload.data.username, payload.data.password)
-
-    toast.add({
-      title: 'Login successful',
-      description: 'You are now logged in.',
-      color: 'success',
-      icon: 'i-heroicons-check-circle',
-    })
-
-    navigateTo('/')
-  }
-  catch (error) {
-    // Type-safe error message extraction
-    const message = error instanceof Error ? error.message : 'An unexpected error occurred.'
-
-    toast.add({
-      title: 'Login failed',
-      description: message,
-      color: 'error',
-      icon: 'i-heroicons-exclamation-circle',
-    })
-    console.error(error)
-  }
-}
+const { data: moviesData, pending: moviesPending, error: moviesError } = useDiscover('movie', 1)
+const { data: movieData, pending: moviePending, error: movieError } = useCheckMovie(969681)
+const { data: genresData, pending: genresPending, error: genresError } = useGetGenres('movie', 1)
+const { data: pMoviesData, pending: pMoviesPending, error: pMoviesError } = useGetPopularMovies(1)
+const { data: SearchMorSData } = useSearchMoviesOrShows('tv', 1, 'Breaking Bad')
+const { data: tMovies } = usegetTrendingMoviesOrShows('movie', 1, 'day')
+/*
+const { data: showsData, pending: showsPending, error: showsError } = useDiscover('tv', 1)
+*/
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center gap-4 p-4">
-    <UPageCard class="w-full max-w-md">
-      <UAuthForm
-        :schema="schema"
-        title="Login"
-        description="Enter your credentials to access your account."
-        icon="i-lucide-user"
-        :fields="fields"
-        :providers="providers"
-        @submit="onSubmit"
-      />
-    </UPageCard>
-  </div>
+  <pre>
+{{ tMovies }}
+  </pre>
+  <!-- <div class="w-full h-full flex flex-col justify-center gap-8 p-4">
+    <section>
+      <h2 class="text-2xl font-bold text-white mb-4">
+        Popular Movies
+      </h2>
+
+      <div v-if="moviesPending" class="text-gray-400">
+        Loading movies...
+      </div>
+      <div v-else-if="moviesError" class="text-red-400">
+        Error: {{ moviesError.message }}
+      </div>
+      <UCarousel
+        v-else
+        v-slot="{ item }"
+        loop
+        arrows
+        :items="moviesData?.results || []"
+        :ui="{
+          item: 'basis-1/3 md:basis-1/4 lg:basis-1/5',
+          container: 'gap-4',
+        }"
+      >
+        <img
+          :src="`https://image.tmdb.org/t/p/w300${item.poster_path}`"
+          :alt="item.title"
+          class="w-full h-56 object-cover rounded-lg"
+          @error="(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x450?text=No+Image'"
+        >
+      </UCarousel>
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-white mb-4">
+        Popular TV Shows
+      </h2>
+
+      <div v-if="showsPending" class="text-gray-400">
+        Loading TV shows...
+      </div>
+      <div v-else-if="showsError" class="text-red-400">
+        Error: {{ showsError.message }}
+      </div>
+
+      <UCarousel
+        v-else
+        v-slot="{ item }"
+        loop
+        arrows
+        :items="showsData?.results || []"
+        :ui="{
+          item: 'basis-1/3 md:basis-1/4 lg:basis-1/5',
+          container: 'gap-4',
+        }"
+      >
+        <img
+          :src="`https://image.tmdb.org/t/p/w300${item.poster_path}`"
+          :alt="item.name"
+          class="w-full h-56 object-cover rounded-lg"
+          @error="(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x450?text=No+Image'"
+        >
+      </UCarousel>
+    </section>
+  </div> -->
 </template>
