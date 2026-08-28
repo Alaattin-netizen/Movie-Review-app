@@ -1,3 +1,10 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+:root {
+  --ui-container: var(--container-5xl);
+}
+
+@theme {
+  --font-sans: 'Figtree', sans-serif;
+}

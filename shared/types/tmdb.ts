@@ -26,6 +26,7 @@ export interface Media {
   revenue?: number
   status?: string
   genres?: Genre[]
+  job?: string
   production_companies?: any[]
   videos?: {
     results: Video[]
@@ -37,6 +38,9 @@ export interface Media {
   images?: {
     backdrops: Image[]
     posters: Image[]
+  }
+  reviews?: {
+    results: Review[]
   }
   external_ids?: ExternalIds
   // cast
@@ -71,6 +75,7 @@ export interface Person {
   images?: {
     profiles: Image[]
   }
+
 }
 
 export interface Video {
@@ -147,4 +152,19 @@ export interface TMDBAccount {
 }
 export interface GenreListResponse {
   genres: Genre[]
+}
+
+export interface Review {
+  id: string
+  author: string
+  author_details: {
+    name: string
+    username: string
+    avatar_path: string | null
+    rating: number | null
+  }
+  content: string
+  created_at: string
+  updated_at: string
+  url: string
 }

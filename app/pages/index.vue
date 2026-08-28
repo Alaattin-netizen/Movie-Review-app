@@ -1,81 +1,87 @@
 <script setup lang="ts">
-const { data: moviesData, pending: moviesPending, error: moviesError } = useDiscover('movie', 1)
-const { data: movieData, pending: moviePending, error: movieError } = useCheckMovie(969681)
-const { data: genresData, pending: genresPending, error: genresError } = useGetGenres('movie', 1)
-const { data: pMoviesData, pending: pMoviesPending, error: pMoviesError } = useGetPopularMovies(1)
-const { data: SearchMorSData } = useSearchMoviesOrShows('tv', 1, 'Breaking Bad')
-const { data: tMovies } = usegetTrendingMoviesOrShows('movie', 1, 'day')
-/*
-const { data: showsData, pending: showsPending, error: showsError } = useDiscover('tv', 1)
-*/
+const { data: moviesData, pending: moviesPending } = useDiscover('movie', 1)
+const { data: tvsData, pending: tvsPending } = useDiscover('tv', 1)
+
+const loading = computed(() => moviesPending.value || tvsPending.value)
+
+function goToDetail(media: Media) {
+  const type = media.media_type || (media.title ? 'movies' : 'tvs')
+  navigateTo(`/${type}/${media.id}`)
+}
 </script>
 
 <template>
-  <pre>
-{{ tMovies }}
-  </pre>
-  <!-- <div class="w-full h-full flex flex-col justify-center gap-8 p-4">
-    <section>
-      <h2 class="text-2xl font-bold text-white mb-4">
-        Popular Movies
-      </h2>
+  <UPage>
+    <UPageHero
+      title="MOVIES APP"
+      description="Review the best movies!!"
+    />
 
-      <div v-if="moviesPending" class="text-gray-400">
-        Loading movies...
-      </div>
-      <div v-else-if="moviesError" class="text-red-400">
-        Error: {{ moviesError.message }}
-      </div>
-      <UCarousel
-        v-else
-        v-slot="{ item }"
-        loop
-        arrows
-        :items="moviesData?.results || []"
-        :ui="{
-          item: 'basis-1/3 md:basis-1/4 lg:basis-1/5',
-          container: 'gap-4',
-        }"
-      >
-        <img
-          :src="`https://image.tmdb.org/t/p/w300${item.poster_path}`"
-          :alt="item.title"
-          class="w-full h-56 object-cover rounded-lg"
-          @error="(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x450?text=No+Image'"
-        >
-      </UCarousel>
-    </section>
-
-    <section>
-      <h2 class="text-2xl font-bold text-white mb-4">
-        Popular TV Shows
-      </h2>
-
-      <div v-if="showsPending" class="text-gray-400">
-        Loading TV shows...
-      </div>
-      <div v-else-if="showsError" class="text-red-400">
-        Error: {{ showsError.message }}
+    <ClientOnly>
+      <div v-if="loading" class="w-full flex justify-center">
+        <div class="rounded-full border-4 w-12 h-12 border-l-primary-200 border-t-primary-400 border-r-primary-600 border-b-primary-800 animate-spin" />
       </div>
 
-      <UCarousel
-        v-else
-        v-slot="{ item }"
-        loop
-        arrows
-        :items="showsData?.results || []"
-        :ui="{
-          item: 'basis-1/3 md:basis-1/4 lg:basis-1/5',
-          container: 'gap-4',
-        }"
-      >
-        <img
-          :src="`https://image.tmdb.org/t/p/w300${item.poster_path}`"
-          :alt="item.name"
-          class="w-full h-56 object-cover rounded-lg"
-          @error="(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x450?text=No+Image'"
-        >
-      </UCarousel>
-    </section>
+      <UPageBody v-else>
+        <UContainer>
+          <UPageHeader title="Movies" />
+          <MediaCarousel
+            v-if="moviesData?.results?.length"
+            :items="moviesData.results"
+            title="Popular Movies"
+            @item-click="goToDetail"
+          />
+        </UContainer>
+
+        <UContainer>
+          <UPageHeader title="Tvs" />
+          <MediaCarousel
+            v-if="tvsData?.results?.length"
+            :items="tvsData.results"
+            title="Popular TV tvs"
+            @item-click="goToDetail"
+          />
+        </UContainer>
+
+        <UPageCTA
+          variant="solid"
+          title="ENJOY!"
+          :ui="{ root: 'rounded-none' }"
+        />
+      </UPageBody>
+
+      <template #fallback>
+        <div class="w-full flex justify-center">
+          <div class="rounded-full border-4 w-12 h-12 border-l-primary-200 border-t-primary-400 border-r-primary-600 border-b-primary-800 animate-spin" />
+        </div>
+      </template>
+    </ClientOnly>
+  </UPage>
+  <!-- <div class="container mx-auto px-4 py-8 space-y-12">
+    <div v-if="moviesPending || tvsPending" class="text-center py-8">
+      <UIcon name="i-lucide-loader-circle" class="animate-spin text-2xl" />
+    </div>
+
+    <div v-else-if="moviesError || tvsError" class="text-center text-red-500 py-8">
+      Failed to load content.
+    </div>
+
+    <MediaCarousel
+      v-if="moviesData?.results?.length"
+      :items="moviesData.results"
+      title="Popular Movies"
+      @item-click="goToDetail"
+    />
+
+    <MediaCarousel
+      v-if="tvsData?.results?.length"
+      :items="tvsData.results"
+      title="Popular TV tvs"
+      @item-click="goToDetail"
+    />
+
+    <p v-if="!moviesData?.results?.length && !tvsData?.results?.length" class="text-center py-8">
+      No content available.
+    </p>
   </div> -->
 </template>
