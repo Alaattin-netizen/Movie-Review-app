@@ -8,3 +8,20 @@
 @theme {
   --font-sans: 'Figtree', sans-serif;
 }
+
+
+:root {
+  --ui-bg: var(--color-gray-50);
+  --ui-bg-elevated: var(--color-white);
+  --ui-text: var(--color-gray-900);
+  --ui-text-muted: var(--color-gray-500);
+  --ui-border: var(--color-gray-200);
+}
+
+.dark {
+  --ui-bg: var(--color-gray-950);
+  --ui-bg-elevated: var(--color-gray-900);
+  --ui-text: var(--color-gray-100);
+  --ui-text-muted: var(--color-gray-400);
+  --ui-border: var(--color-gray-800);
+}

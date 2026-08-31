@@ -42,7 +42,7 @@ const items = computed<NavigationMenuItem[]>(() => [
     </UMain>
     <UFooter>
       <template #right>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-muted">
           © {{ new Date().getFullYear() }} MovieApp. All rights reserved.
         </p>
       </template>

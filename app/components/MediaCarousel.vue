@@ -59,10 +59,6 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <!-- <h2 v-if="title" class="text-2xl font-bold mb-4">
-      {{ title }}
-    </h2> -->
-
     <div class="relative group">
       <UButton
         v-if="showArrows"

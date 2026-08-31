@@ -57,31 +57,4 @@ function goToDetail(media: Media) {
       </template>
     </ClientOnly>
   </UPage>
-  <!-- <div class="container mx-auto px-4 py-8 space-y-12">
-    <div v-if="moviesPending || tvsPending" class="text-center py-8">
-      <UIcon name="i-lucide-loader-circle" class="animate-spin text-2xl" />
-    </div>
-
-    <div v-else-if="moviesError || tvsError" class="text-center text-red-500 py-8">
-      Failed to load content.
-    </div>
-
-    <MediaCarousel
-      v-if="moviesData?.results?.length"
-      :items="moviesData.results"
-      title="Popular Movies"
-      @item-click="goToDetail"
-    />
-
-    <MediaCarousel
-      v-if="tvsData?.results?.length"
-      :items="tvsData.results"
-      title="Popular TV tvs"
-      @item-click="goToDetail"
-    />
-
-    <p v-if="!moviesData?.results?.length && !tvsData?.results?.length" class="text-center py-8">
-      No content available.
-    </p>
-  </div> -->
 </template>

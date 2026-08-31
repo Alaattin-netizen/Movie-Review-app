@@ -1,6 +1,5 @@
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
-  const page = query.page ? String(query.page) : '1'
 
   const id = query.id as string
   if (!id) {
