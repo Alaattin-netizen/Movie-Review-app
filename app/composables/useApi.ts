@@ -116,3 +116,49 @@ export function useGetPerson(id: string) {
 
   return { data, pending, error }
 }
+
+export async function toggleFavorite(mediaType: MediaType, mediaId: number, favorite: boolean) {
+  const { data, error } = await useFetch('/api/account/favorite', {
+    method: 'POST',
+    body: { mediaType, mediaId, favorite },
+  })
+  if (error.value)
+    throw error.value
+  return data.value
+}
+
+export async function toggleWatchlist(mediaType: MediaType, mediaId: number, watchlist: boolean) {
+  const { data, error } = await useFetch('/api/account/watchlist', {
+    method: 'POST',
+    body: { mediaType, mediaId, watchlist },
+  })
+  if (error.value)
+    throw error.value
+  return data.value
+}
+
+export async function setRating(mediaType: MediaType, mediaId: number, rating: number) {
+  const { data, error } = await useFetch('/api/movie/rating', {
+    method: 'POST',
+    body: { mediaType, mediaId, rating },
+  })
+  if (error.value)
+    throw error.value
+  return data.value
+}
+
+export function getFavoriteMovies() {
+  return useFetch<{ movies: Media[] }>('/api/account/favorite-movies')
+}
+
+export function getFavoriteTv() {
+  return useFetch<{ tv: Media[] }>('/api/account/favorite-tv')
+}
+
+export function getWatchlistMovies() {
+  return useFetch<{ movies: Media[] }>('/api/account/watchlist-movies')
+}
+
+export function getWatchlistTv() {
+  return useFetch<{ tv: Media[] }>('/api/account/watchlist-tv')
+}

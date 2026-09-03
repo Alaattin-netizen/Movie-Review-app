@@ -10,3 +10,8 @@ export function getTmdbUrl(path: string, params: Record<string, string | number 
 
   return `https://api.themoviedb.org/3${path}?${searchParams.toString()}`
 }
+export async function getAccountId(sessionId: string): Promise<number> {
+  const url = getTmdbUrl('/account', { session_id: sessionId })
+  const account = await $fetch(url) as TMDBAccount
+  return account.id
+}

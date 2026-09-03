@@ -13,9 +13,27 @@ function goToDetail(media: Media) {
 <template>
   <UPage>
     <UPageHero
-      title="MOVIES APP"
-      description="Review the best movies!!"
-    />
+      title="CineScore"
+    >
+      <template #description>
+        <div class="flex justify-center">
+          <NuxtImg
+            src="/logo-light.png"
+            alt="Logo"
+            class="h-50 w-auto dark:hidden"
+          />
+          <NuxtImg
+            src="/logo-dark.png"
+            alt="Logo"
+            class="h-50 w-auto hidden dark:block"
+          />
+        </div>
+        <!-- Optionally keep the original description text -->
+        <p class="text-muted text-center mt-2">
+          Review the best movies!!
+        </p>
+      </template>
+    </UPageHero>
 
     <ClientOnly>
       <div v-if="loading" class="w-full flex justify-center">

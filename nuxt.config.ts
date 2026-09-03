@@ -11,6 +11,8 @@ export default defineNuxtConfig({
     tmdbAccessToken: process.env.NUXT_TMDB_ACCESS_TOKEN,
 
     tmdbApiKey: process.env.NUXT_TMDB_API_KEY,
+    tmdbSessionId: process.env.TMDB_SESSION_ID,
+    tmdbAccountId: process.env.TMDB_ACCOUNT_ID,
 
   },
 

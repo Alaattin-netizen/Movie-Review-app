@@ -4,12 +4,69 @@ import { navigateTo } from '#app'
 const props = defineProps<{
   media: Media
 }>()
-
+interface TmdbStatusResponse {
+  status_code: number
+  status_message?: string
+}
 const title = computed(() => props.media.title || props.media.name || 'Untitled')
 const releaseYear = computed(() => {
   const date = props.media.release_date || props.media.first_air_date
   return date ? new Date(date).getFullYear() : null
 })
+
+const isFavorite = ref(false)
+const isWatchlisted = ref(false)
+const userRating = ref(0)
+
+async function handleToggleFavorite() {
+  try {
+    const newState = !isFavorite.value
+    const result = await toggleFavorite(
+      props.media.media_type || 'movie',
+      Number(props.media.id),
+      newState,
+    ) as TmdbStatusResponse
+    if (result?.status_code === 1) {
+      isFavorite.value = newState
+    }
+  }
+  catch (error) {
+    console.error('Failed to toggle favorite:', error)
+  }
+}
+
+async function handleToggleWatchlist() {
+  try {
+    const newState = !isWatchlisted.value
+    const result = await toggleWatchlist(
+      props.media.media_type || 'movie',
+      Number(props.media.id),
+      newState,
+    ) as TmdbStatusResponse
+    if (result?.status_code === 1) {
+      isWatchlisted.value = newState
+    }
+  }
+  catch (error) {
+    console.error('Failed to toggle watchlist:', error)
+  }
+}
+
+async function handleSetRating(value: number) {
+  try {
+    const result = await setRating(
+      props.media.media_type || 'movie',
+      Number(props.media.id),
+      value,
+    ) as TmdbStatusResponse
+    if (result?.status_code === 1) {
+      userRating.value = value
+    }
+  }
+  catch (error) {
+    console.error('Failed to set rating:', error)
+  }
+}
 
 const showVideoModal = ref(false)
 const selectedVideo = ref<Video | null>(null)
@@ -60,7 +117,7 @@ const MAX_IMAGES = 20
 
 <template>
   <UPage>
-    ,    <UPageSection>
+    <UPageSection>
       <template #header>
         <UPageHeader :title="title">
           <template #description>
@@ -68,10 +125,8 @@ const MAX_IMAGES = 20
               <UBadge v-if="releaseYear" color="neutral" variant="subtle">
                 {{ releaseYear }}
               </UBadge>
-              <UBadge v-if="media.vote_average" color="neutral" variant="subtle">
-                <UTooltip :text="`${media.vote_average.toFixed(1)} / 10`">
-                  <StarRating :value="media.vote_average" />
-                </UTooltip>
+              <UBadge v-if="media.vote_average" color="warning" variant="solid">
+                ★ {{ media.vote_average.toFixed(1) }}
               </UBadge>
               <UBadge v-if="media.vote_count" color="neutral" variant="subtle">
                 {{ media.vote_count }} votes
@@ -108,6 +163,41 @@ const MAX_IMAGES = 20
           <p v-if="media.overview" class="text-default leading-relaxed">
             {{ media.overview }}
           </p>
+
+          <div class="flex flex-wrap items-center gap-4 mt-2 border-t border-default pt-4">
+            <!-- Favorite -->
+            <UButton
+              :icon="isFavorite ? 'i-lucide-heart' : 'i-lucide-heart'"
+              :color="isFavorite ? 'error' : 'neutral'"
+              :variant="isFavorite ? 'solid' : 'ghost'"
+              @click="handleToggleFavorite"
+            >
+              {{ isFavorite ? 'Favorited' : 'Add to Favorites' }}
+            </UButton>
+
+            <!-- Watchlist -->
+            <UButton
+              :icon="isWatchlisted ? 'i-lucide-bookmark' : 'i-lucide-bookmark'"
+              :color="isWatchlisted ? 'primary' : 'neutral'"
+              :variant="isWatchlisted ? 'solid' : 'ghost'"
+              @click="handleToggleWatchlist"
+            >
+              {{ isWatchlisted ? 'In Watchlist' : 'Add to Watchlist' }}
+            </UButton>
+
+            <!-- Rating -->
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-muted">Rate:</span>
+              <UInputRating
+                v-model="userRating"
+                :step="0.5"
+                :length="10"
+                color="warning"
+                @update:model-value="handleSetRating"
+              />
+              <span class="text-sm text-muted min-w-8">{{ userRating }}</span>
+            </div>
+          </div>
 
           <div v-if="media.credits?.cast?.length || media.credits?.crew?.length">
             <div v-if="media.credits.cast?.length">
@@ -224,7 +314,6 @@ const MAX_IMAGES = 20
                     ★ {{ review.author_details.rating.toFixed(1) }}
                   </span>
                 </p>
-
                 <p class="text-xs text-muted">
                   {{ new Date(review.created_at).toLocaleDateString() }}
                 </p>
@@ -283,3 +372,16 @@ const MAX_IMAGES = 20
     </UCard>
   </UModal>
 </template>
+
+<style scoped>
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--ui-border);
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+</style>
